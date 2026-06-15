@@ -1,9 +1,3 @@
-// ============================================================
-//  FASE 3 — Implementação Local MongoDB
-//  Domínio: Sistema de Campeonato de Futebol
-//  Execute com: mongosh mongodb_setup.js
-// ============================================================
-
 // ── 0. Selecionar / criar o banco ───────────────────────────
 use("campeonato_futebol");
 
