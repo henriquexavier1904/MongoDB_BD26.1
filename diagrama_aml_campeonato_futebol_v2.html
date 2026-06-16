@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { margin: 0; padding: 0; background: transparent; font-family: "Anthropic Sans", sans-serif; }
+.canvas { width: 100%; overflow-x: auto; }
+svg text { font-family: "Anthropic Sans", sans-serif; }
+
+/* Aggregate outer box */
+.agg-box { fill: #FEFCE8; stroke: #1a1a1a; stroke-width: 2; }
+.agg-box-dark { fill: #292524; stroke: #d4d0c8; stroke-width: 2; }
+
+/* Entity inner box (dashed) */
+.ent-box { fill: #FFFDE7; stroke: #1a1a1a; stroke-width: 1.2; stroke-dasharray: 5,3; }
+.ent-box-dark { fill: #1c1917; stroke: #c2bfb5; stroke-width: 1.2; stroke-dasharray: 5,3; }
+
+/* Value Object box */
+.vo-box { fill: #FFF8E1; stroke: #888; stroke-width: 1; }
+
+/* Header bar inside aggregate */
+.agg-header { fill: #1a1a1a; opacity: 0.12; }
+
+/* Composition line */
+.comp-line { stroke: #1a1a1a; stroke-width: 1.4; fill: none; }
+.comp-diamond { fill: #1a1a1a; }
+
+/* Reference line */
+.ref-line { stroke: #555; stroke-width: 1; fill: none; stroke-dasharray: 6,3; }
+
+/* Text styles */
+.lbl-agg   { font-size: 13px; font-weight: 600; fill: #1a1a1a; }
+.lbl-ent   { font-size: 12px; font-weight: 600; fill: #1a1a1a; }
+.lbl-attr  { font-size: 11px; fill: #333; }
+.lbl-ref   { font-size: 10px; fill: #555; font-style: italic; }
+.lbl-card  { font-size: 10px; fill: #555; }
+.lbl-note  { font-size: 10px; fill: #888; font-style: italic; }
+.lbl-vo    { font-size: 10px; fill: #666; font-style: italic; }
+.lbl-refl  { font-size: 10px; fill: #444; }
+
+@media (prefers-color-scheme: dark) {
+  .agg-box    { fill: #292520; stroke: #d4d0c8; }
+  .ent-box    { fill: #1e1c18; stroke: #c2bfb5; }
+  .vo-box     { fill: #252218; stroke: #aaa; }
+  .agg-header { fill: #d4d0c8; opacity: 0.13; }
+  .comp-diamond { fill: #d4d0c8; }
+  .comp-line  { stroke: #d4d0c8; }
+  .ref-line   { stroke: #aaa; }
+  .lbl-agg    { fill: #f0ece0; }
+  .lbl-ent    { fill: #e8e4d8; }
+  .lbl-attr   { fill: #c8c4b4; }
+  .lbl-ref    { fill: #aaa; }
+  .lbl-card   { fill: #aaa; }
+  .lbl-note   { fill: #888; }
+  .lbl-vo     { fill: #999; }
+  .lbl-refl   { fill: #bbb; }
+}
+</style>
+</head>
+<body>
+<div class="canvas">
+<svg width="100%" viewBox="0 0 1100 1280" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M1 1L9 5L1 9" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arr-dark" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M1 1L9 5L1 9" fill="none" stroke="#aaa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- ═══════════════════════════════════════════
+     TÍTULO
+═══════════════════════════════════════════ -->
+<text x="550" y="32" text-anchor="middle" class="lbl-agg" style="font-size:15px">Diagrama de Agregados — Sistema de Campeonato de Futebol</text>
+<text x="550" y="50" text-anchor="middle" class="lbl-note" style="font-size:11px">Notação AML  ·  ◆ Composição (embutido)  ·  --▶ Associação (referência)  ·  [Cl::] Entidade  ·  □ Objeto de Valor</text>
+
+<!-- ═══════════════════════════════════════════
+     AGREGADO: Times  (x=30, y=70, w=460, h=560)
+═══════════════════════════════════════════ -->
+<rect x="30" y="66" width="460" height="564" rx="6" class="agg-box"/>
+<rect x="30" y="66" width="460" height="22" rx="4" class="agg-header"/>
+<text x="260" y="81" text-anchor="middle" class="lbl-agg">Times</text>
+
+  <!-- Entidade Time (x=46, y=98, w=200, h=170) -->
+  <rect x="46" y="98" width="200" height="168" rx="3" class="ent-box"/>
+  <rect x="46" y="98" width="200" height="16" rx="2" class="agg-header"/>
+  <text x="146" y="110" text-anchor="middle" class="lbl-ent">Time</text>
+  <text x="58" y="128" class="lbl-attr"># codigo_time : str</text>
+  <text x="58" y="144" class="lbl-attr">- nome : str</text>
+  <line x1="46" y1="152" x2="246" y2="152" stroke="#ccc" stroke-width="0.5"/>
+  <text x="58" y="166" class="lbl-note">Composições:</text>
+  <text x="58" y="180" class="lbl-attr">+ [membros]</text>
+  <text x="58" y="194" class="lbl-attr">+ [rivalidades]</text>
+  <text x="58" y="208" class="lbl-attr">+ arena</text>
+  <text x="58" y="224" class="lbl-note">(obj. de valor)</text>
+  <text x="58" y="240" class="lbl-ref">  ↓ embutido</text>
+  <text x="58" y="256" class="lbl-ref">REF rival_id → Time</text>
+
+  <!-- Objeto de Valor Arena (x=264, y=98, w=210, h=90) -->
+  <rect x="264" y="98" width="210" height="92" rx="3" class="vo-box"/>
+  <text x="369" y="112" text-anchor="middle" class="lbl-vo">«Objeto de Valor»</text>
+  <text x="369" y="126" text-anchor="middle" class="lbl-ent">Arena</text>
+  <line x1="264" y1="132" x2="474" y2="132" stroke="#ccc" stroke-width="0.5"/>
+  <text x="276" y="148" class="lbl-attr">+ cidade : str</text>
+  <text x="276" y="164" class="lbl-attr">+ logradouro : str</text>
+  <text x="276" y="180" class="lbl-note">sem identidade própria</text>
+
+  <!-- Composição Time → Arena -->
+  <line x1="246" y1="136" x2="264" y2="136" class="comp-line"/>
+  <polygon points="246,136 254,131 262,136 254,141" class="comp-diamond"/>
+  <text x="248" y="128" class="lbl-card">1</text>
+
+  <!-- Entidade Rivalidade (x=264, y=206, w=210, h=100) -->
+  <rect x="264" y="206" width="210" height="100" rx="3" class="ent-box"/>
+  <rect x="264" y="206" width="210" height="16" rx="2" class="agg-header"/>
+  <text x="369" y="218" text-anchor="middle" class="lbl-ent">Rivalidade</text>
+  <text x="276" y="236" class="lbl-attr">- apelido_classico : str</text>
+  <text x="276" y="252" class="lbl-ref">rival_id : ref → Time</text>
+  <text x="276" y="268" class="lbl-note">(atrib. do relacionamento)</text>
+  <text x="276" y="284" class="lbl-note">REF auto-referência</text>
+  <text x="276" y="298" class="lbl-note">cardinalidade: 0..*</text>
+
+  <!-- Composição Time → Rivalidade -->
+  <line x1="246" y1="240" x2="264" y2="240" class="comp-line"/>
+  <polygon points="246,240 254,235 262,240 254,245" class="comp-diamond"/>
+  <text x="248" y="232" class="lbl-card">0..*</text>
+
+  <!-- Entidade Membro (x=46, y=286, w=200, h=80) -->
+  <rect x="46" y="286" width="200" height="80" rx="3" class="ent-box"/>
+  <rect x="46" y="286" width="200" height="16" rx="2" class="agg-header"/>
+  <text x="146" y="298" text-anchor="middle" class="lbl-ent">Membro</text>
+  <text x="58" y="316" class="lbl-attr"># cpf : str</text>
+  <text x="58" y="330" class="lbl-attr">- nome : str   + salario : real</text>
+  <text x="58" y="344" class="lbl-attr">+ data_nascimento : date</text>
+  <text x="58" y="358" class="lbl-attr">+ data_contratacao : date</text>
+
+  <!-- Composição Time → Membro -->
+  <line x1="146" y1="266" x2="146" y2="286" class="comp-line"/>
+  <polygon points="146,266 141,274 146,282 151,274" class="comp-diamond"/>
+  <text x="150" y="278" class="lbl-card">1..*</text>
+
+  <!-- XOR bracket -->
+  <line x1="46" y1="380" x2="474" y2="380" stroke="#888" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <text x="550" y="384" class="lbl-note" style="display:none">XOR</text>
+  <text x="220" y="394" text-anchor="middle" class="lbl-note">«XOR» — disjunta total: Membro é obrigatoriamente Jogador ou Técnico</text>
+
+  <!-- Entidade Jogador (x=46, y=406, w=200, h=120) -->
+  <rect x="46" y="406" width="200" height="120" rx="3" class="ent-box"/>
+  <rect x="46" y="406" width="200" height="16" rx="2" class="agg-header"/>
+  <text x="146" y="418" text-anchor="middle" class="lbl-ent">Jogador</text>
+  <text x="58" y="436" class="lbl-attr">+ numero_camisa : int</text>
+  <text x="58" y="450" class="lbl-attr">+ data_ingresso : date</text>
+  <text x="58" y="464" class="lbl-attr">+ [posicoes] : str</text>
+  <text x="58" y="478" class="lbl-note">(multivalorado)</text>
+  <text x="58" y="494" class="lbl-note">especialização de Membro</text>
+  <text x="58" y="510" class="lbl-note">via XOR</text>
+  <!-- herança -->
+  <line x1="146" y1="406" x2="146" y2="386" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+  <polygon points="146,388 140,400 152,400" fill="none" stroke="#888" stroke-width="1"/>
+
+  <!-- Entidade Tecnico (x=264, y=322, w=210, h=90) -->
+  <rect x="264" y="322" width="210" height="90" rx="3" class="ent-box"/>
+  <rect x="264" y="322" width="210" height="16" rx="2" class="agg-header"/>
+  <text x="369" y="334" text-anchor="middle" class="lbl-ent">Tecnico</text>
+  <text x="276" y="352" class="lbl-attr">+ especialidade : str</text>
+  <text x="276" y="368" class="lbl-note">especialização de Membro</text>
+  <text x="276" y="384" class="lbl-note">via XOR</text>
+  <text x="276" y="400" class="lbl-note">cardinalidade: 1 técnico / time</text>
+  <!-- herança -->
+  <line x1="264" y1="340" x2="246" y2="340" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+  <polygon points="248,334 248,346 260,340" fill="none" stroke="#888" stroke-width="1"/>
+
+  <!-- Nota de rodapé do agregado -->
+  <text x="46" y="546" class="lbl-note">EMB(Time, &lt;Arena&gt;)  ·  EMB(Time, [+Membro])</text>
+  <text x="46" y="560" class="lbl-note">EMB(Time, [+Rivalidade])  ·  REF(Rivalidade, rival_id → Time)</text>
+  <text x="46" y="574" class="lbl-note">XOR(Membro → Jogador | Tecnico)</text>
+  <text x="46" y="590" class="lbl-note">XOR(Membro → Jogador | Tecnico)</text>
+  <text x="46" y="590" class="lbl-note">EMB(Membro, [+Jogador | +Tecnico]) via especialização XOR</text>
+  <text x="46" y="604" class="lbl-note">EMB(Membro, [+Jogador | +Tecnico]) via especialização XOR</text>
+  <text x="46" y="620" class="lbl-note">EMB(Membro, Jogador | Tecnico) via especialização XOR disjunta total</text>
+
+<!-- ═══════════════════════════════════════════
+     AGREGADO: Campeonatos  (x=610, y=70, w=460, h=468)
+═══════════════════════════════════════════ -->
+<rect x="610" y="66" width="460" height="468" rx="6" class="agg-box"/>
+<rect x="610" y="66" width="460" height="22" rx="4" class="agg-header"/>
+<text x="840" y="81" text-anchor="middle" class="lbl-agg">Campeonatos</text>
+
+  <!-- Entidade Campeonato (x=626, y=98, w=200, h=138) -->
+  <rect x="626" y="98" width="200" height="138" rx="3" class="ent-box"/>
+  <rect x="626" y="98" width="200" height="16" rx="2" class="agg-header"/>
+  <text x="726" y="110" text-anchor="middle" class="lbl-ent">Campeonato</text>
+  <text x="638" y="128" class="lbl-attr"># codigo : str</text>
+  <text x="638" y="144" class="lbl-attr">- nome : str</text>
+  <text x="638" y="160" class="lbl-attr">+ data_inicio : date</text>
+  <text x="638" y="176" class="lbl-attr">+ data_encerramento : date</text>
+  <text x="638" y="192" class="lbl-attr">+ tipo : str</text>
+  <text x="638" y="208" class="lbl-note">(estadual/regional/nacional)</text>
+  <text x="638" y="224" class="lbl-ref">  ↓ compõe [rodadas]</text>
+
+  <!-- Entidade Rodada (x=626, y=254, w=200, h=84) -->
+  <rect x="626" y="254" width="200" height="84" rx="3" class="ent-box"/>
+  <rect x="626" y="254" width="200" height="16" rx="2" class="agg-header"/>
+  <text x="726" y="266" text-anchor="middle" class="lbl-ent">Rodada</text>
+  <text x="638" y="284" class="lbl-attr">+ numero : int</text>
+  <text x="638" y="300" class="lbl-note">(entidade fraca)</text>
+  <text x="638" y="316" class="lbl-note">não existe sem Campeonato</text>
+  <text x="638" y="330" class="lbl-note">cardinalidade: 1..*</text>
+
+  <!-- Composição Campeonato → Rodada -->
+  <line x1="726" y1="236" x2="726" y2="254" class="comp-line"/>
+  <polygon points="726,236 721,244 726,252 731,244" class="comp-diamond"/>
+  <text x="730" y="248" class="lbl-card">1..*</text>
+
+  <!-- Entidade Patrocinio (x=848, y=98, w=206, h=140) -->
+  <rect x="848" y="98" width="206" height="140" rx="3" class="ent-box"/>
+  <rect x="848" y="98" width="206" height="16" rx="2" class="agg-header"/>
+  <text x="951" y="110" text-anchor="middle" class="lbl-ent">Patrocinio</text>
+  <text x="860" y="128" class="lbl-attr">+ data_assinatura : date</text>
+  <text x="860" y="144" class="lbl-attr">+ valor : real</text>
+  <text x="860" y="160" class="lbl-ref">empresa_id : ref → Empresa</text>
+  <line x1="848" y1="168" x2="1054" y2="168" stroke="#ccc" stroke-width="0.5"/>
+  <text x="860" y="184" class="lbl-note">embutido em Campeonato</text>
+  <text x="860" y="198" class="lbl-note">cardinalidade: 0..*</text>
+  <text x="860" y="214" class="lbl-note">REF empresa_id → Empresa</text>
+  <text x="860" y="228" class="lbl-ref">  ↓ compõe [acoes]</text>
+
+  <!-- Composição Campeonato → Patrocinio -->
+  <line x1="826" y1="150" x2="848" y2="150" class="comp-line"/>
+  <polygon points="826,150 834,145 842,150 834,155" class="comp-diamond"/>
+  <text x="828" y="143" class="lbl-card">0..*</text>
+
+  <!-- Entidade AcaoPromocional (x=848, y=254, w=206, h=116) -->
+  <rect x="848" y="254" width="206" height="116" rx="3" class="ent-box"/>
+  <rect x="848" y="254" width="206" height="16" rx="2" class="agg-header"/>
+  <text x="951" y="266" text-anchor="middle" class="lbl-ent">AcaoPromocional</text>
+  <text x="860" y="284" class="lbl-attr"># codigo : str</text>
+  <text x="860" y="300" class="lbl-attr">+ tipo : str</text>
+  <text x="860" y="316" class="lbl-attr">+ descricao : str</text>
+  <text x="860" y="332" class="lbl-attr">+ data_realizacao : date</text>
+  <text x="860" y="348" class="lbl-note">(entidade fraca)</text>
+  <text x="860" y="362" class="lbl-note">não existe sem Patrocinio</text>
+
+  <!-- Composição Patrocinio → AcaoPromocional -->
+  <line x1="951" y1="238" x2="951" y2="254" class="comp-line"/>
+  <polygon points="951,238 946,246 951,254 956,246" class="comp-diamond"/>
+  <text x="955" y="250" class="lbl-card">1..*</text>
+
+  <!-- Nota de rodapé -->
+  <text x="626" y="396" class="lbl-note">EMB(Campeonato, [+Rodada])  ·  EMB(Campeonato, [+Patrocinio])</text>
+  <text x="626" y="410" class="lbl-note">EMB(Patrocinio, [+AcaoPromocional])  ·  REF(Patrocinio, empresa_id → Empresa)</text>
+
+<!-- ═══════════════════════════════════════════
+     AGREGADO: Empresas  (x=610, y=566, w=460, h=130)
+═══════════════════════════════════════════ -->
+<rect x="610" y="566" width="460" height="134" rx="6" class="agg-box"/>
+<rect x="610" y="566" width="460" height="22" rx="4" class="agg-header"/>
+<text x="840" y="581" text-anchor="middle" class="lbl-agg">Empresas</text>
+
+  <!-- Entidade Empresa (x=626, y=598, w=200, h=86) -->
+  <rect x="626" y="598" width="200" height="86" rx="3" class="ent-box"/>
+  <rect x="626" y="598" width="200" height="16" rx="2" class="agg-header"/>
+  <text x="726" y="610" text-anchor="middle" class="lbl-ent">Empresa</text>
+  <text x="638" y="628" class="lbl-attr"># cnpj : str</text>
+  <text x="638" y="644" class="lbl-attr">- nome : str</text>
+  <text x="638" y="660" class="lbl-note">(agregado independente)</text>
+  <text x="638" y="674" class="lbl-note">patrocina múltiplos campeonatos</text>
+
+  <text x="626" y="714" class="lbl-note">Empresa é referenciada por Patrocinio.empresa_id</text>
+  <text x="626" y="728" class="lbl-note">REF(Patrocinio, empresa_id → Empresa)</text>
+
+<!-- ═══════════════════════════════════════════
+     AGREGADO: Partidas  (x=30, y=730, w=460, h=390)
+═══════════════════════════════════════════ -->
+<rect x="30" y="730" width="1040" height="390" rx="6" class="agg-box"/>
+<rect x="30" y="730" width="1040" height="22" rx="4" class="agg-header"/>
+<text x="550" y="745" text-anchor="middle" class="lbl-agg">Partidas</text>
+
+  <!-- Entidade Partida (x=46, y=762, w=250, h=200) -->
+  <rect x="46" y="762" width="250" height="200" rx="3" class="ent-box"/>
+  <rect x="46" y="762" width="250" height="16" rx="2" class="agg-header"/>
+  <text x="171" y="774" text-anchor="middle" class="lbl-ent">Partida</text>
+  <text x="58" y="792" class="lbl-attr"># codigo_partida : str</text>
+  <text x="58" y="808" class="lbl-attr">+ data_realizacao : date</text>
+  <text x="58" y="824" class="lbl-attr">+ placar_mandante : int</text>
+  <text x="58" y="840" class="lbl-attr">+ placar_visitante : int</text>
+  <text x="58" y="856" class="lbl-attr">+ espectadores : int</text>
+  <text x="58" y="872" class="lbl-attr">+ arbitro : str</text>
+  <text x="58" y="888" class="lbl-attr">+ numero_rodada : int</text>
+  <line x1="46" y1="896" x2="296" y2="896" stroke="#ccc" stroke-width="0.5"/>
+  <text x="58" y="910" class="lbl-ref">campeonato_id : ref → Campeonato</text>
+  <text x="58" y="924" class="lbl-ref">mandante_id : ref → Time</text>
+  <text x="58" y="938" class="lbl-ref">visitante_id : ref → Time</text>
+  <text x="58" y="954" class="lbl-note">cardinalidade refs: 1 (obrigatório)</text>
+
+  <!-- Entidade Cartao (x=320, y=762, w=230, h=168) -->
+  <rect x="320" y="762" width="230" height="168" rx="3" class="ent-box"/>
+  <rect x="320" y="762" width="230" height="16" rx="2" class="agg-header"/>
+  <text x="435" y="774" text-anchor="middle" class="lbl-ent">Cartao</text>
+  <text x="332" y="792" class="lbl-attr">+ cor : str (amarelo | vermelho)</text>
+  <text x="332" y="808" class="lbl-attr">+ minuto : int</text>
+  <text x="332" y="824" class="lbl-attr">+ motivo : str</text>
+  <text x="332" y="840" class="lbl-ref">jogador_cpf : str (ref implícita)</text>
+  <line x1="320" y1="848" x2="550" y2="848" stroke="#ccc" stroke-width="0.5"/>
+  <text x="332" y="864" class="lbl-note">(entidade fraca)</text>
+  <text x="332" y="880" class="lbl-note">não existe sem a Partida</text>
+  <text x="332" y="896" class="lbl-note">cardinalidade: 0..*</text>
+  <text x="332" y="912" class="lbl-note">vermelho → suspensão automática</text>
+
+  <!-- Composição Partida → Cartao -->
+  <line x1="296" y1="850" x2="320" y2="850" class="comp-line"/>
+  <polygon points="296,850 304,845 312,850 304,855" class="comp-diamond"/>
+  <text x="296" y="843" class="lbl-card">0..*</text>
+
+  <!-- Resumo REF em caixas destacadas -->
+  <!-- REF Partida → Campeonato -->
+  <rect x="600" y="762" width="220" height="72" rx="4" fill="none" stroke="#888" stroke-width="0.8" stroke-dasharray="4,3"/>
+  <text x="710" y="778" text-anchor="middle" class="lbl-ent" style="font-size:11px">REF: Partida → Campeonato</text>
+  <text x="612" y="796" class="lbl-ref">campeonato_id aponta para</text>
+  <text x="612" y="812" class="lbl-ref">o _id do agregado Campeonatos</text>
+  <text x="612" y="826" class="lbl-note">Associação (1 partida ↔ 1 campeonato)</text>
+
+  <!-- REF Partida → Times (mandante) -->
+  <rect x="600" y="848" width="220" height="72" rx="4" fill="none" stroke="#888" stroke-width="0.8" stroke-dasharray="4,3"/>
+  <text x="710" y="864" text-anchor="middle" class="lbl-ent" style="font-size:11px">REF: Partida → Times</text>
+  <text x="612" y="882" class="lbl-ref">mandante_id → Time._id</text>
+  <text x="612" y="898" class="lbl-ref">visitante_id → Time._id</text>
+  <text x="612" y="912" class="lbl-note">Associação (1 partida ↔ 2 times)</text>
+
+  <!-- REF Patrocinio → Empresa -->
+  <rect x="840" y="762" width="210" height="72" rx="4" fill="none" stroke="#888" stroke-width="0.8" stroke-dasharray="4,3"/>
+  <text x="945" y="778" text-anchor="middle" class="lbl-ent" style="font-size:11px">REF: Patrocinio → Empresa</text>
+  <text x="852" y="796" class="lbl-ref">empresa_id aponta para</text>
+  <text x="852" y="812" class="lbl-ref">o _id do agregado Empresas</text>
+  <text x="852" y="826" class="lbl-note">Associação (0..* ↔ 0..*)</text>
+
+  <!-- REF Rivalidade → Time -->
+  <rect x="840" y="848" width="210" height="72" rx="4" fill="none" stroke="#888" stroke-width="0.8" stroke-dasharray="4,3"/>
+  <text x="945" y="864" text-anchor="middle" class="lbl-ent" style="font-size:11px">REF: Rivalidade → Time</text>
+  <text x="852" y="882" class="lbl-ref">rival_id aponta para</text>
+  <text x="852" y="898" class="lbl-ref">o _id do próprio agregado Times</text>
+  <text x="852" y="912" class="lbl-note">Auto-referência (0..* ↔ 0..*)</text>
+
+  <!-- Linha nota rodapé -->
+  <text x="46" y="978" class="lbl-note">EMB(Partida, [+Cartao])  ·  REF(Partida, campeonato_id → Campeonato)  ·  REF(Partida, mandante_id → Time)  ·  REF(Partida, visitante_id → Time)</text>
+
+<!-- ═══════════════════════════════════════════
+     SETAS DE REFERÊNCIA INTER-AGREGADOS
+═══════════════════════════════════════════ -->
+
+<!-- Partida.campeonato_id → Campeonatos (sobe da caixa REF para Campeonatos) -->
+<path d="M710 762 L710 644 L840 644 L840 534" fill="none" class="ref-line" marker-end="url(#arr)"/>
+<text x="742" y="696" class="lbl-refl">campeonato_id</text>
+
+<!-- Partida.mandante_id / visitante_id → Times (sobe para Times) -->
+<path d="M710 848 L710 720 L260 720 L260 634" fill="none" class="ref-line" marker-end="url(#arr)"/>
+<text x="440" y="714" class="lbl-refl">mandante_id / visitante_id</text>
+
+<!-- Patrocinio.empresa_id → Empresas -->
+<path d="M945 762 L945 740 L840 740 L840 700" fill="none" class="ref-line" marker-end="url(#arr)"/>
+<text x="855" y="736" class="lbl-refl">empresa_id</text>
+
+<!-- Rivalidade.rival_id → Times (auto-ref, vai pela esquerda) -->
+<path d="M945 848 L945 960 L20 960 L20 400 L30 400" fill="none" class="ref-line" marker-end="url(#arr)"/>
+<text x="26" y="956" class="lbl-refl">rival_id (auto-ref)</text>
+
+<!-- ═══════════════════════════════════════════
+     LEGENDA PICTOGRAMAS (rodapé)
+═══════════════════════════════════════════ -->
+<rect x="30" y="1140" width="1040" height="126" rx="6" fill="none" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
+<text x="550" y="1158" text-anchor="middle" class="lbl-ent">Pictogramas e Notação Léxica</text>
+
+<text x="46" y="1178" class="lbl-attr"># id único (identificador do documento)</text>
+<text x="46" y="1194" class="lbl-attr">- único (campo com índice único)</text>
+<text x="46" y="1210" class="lbl-attr">+ regular (campo sem restrição de unicidade)</text>
+<text x="46" y="1226" class="lbl-attr">~ derivado / versionado</text>
+<text x="46" y="1242" class="lbl-attr">[ ] lista / array (multivalorado)</text>
+<text x="46" y="1258" class="lbl-attr">[-] set (lista com unicidade)</text>
+
+<text x="340" y="1178" class="lbl-attr">◆─── Composição (embutido): filho não existe sem o pai</text>
+<text x="340" y="1194" class="lbl-attr">──▶  Associação (referência): aponta para _id de outro agregado</text>
+<text x="340" y="1210" class="lbl-attr">«Obj. Valor» Sem identidade própria; definido pelos seus atributos</text>
+<text x="340" y="1226" class="lbl-attr">«XOR» Especialização disjunta total (Jogador ou Técnico, nunca ambos)</text>
+<text x="340" y="1242" class="lbl-attr">EMB(A, B) Notação léxica: B embutido em A</text>
+<text x="340" y="1258" class="lbl-attr">REF(A, campo → B) Notação léxica: referência de A para o agregado B</text>
+
+</svg>
+</div>
+</body>
+</html>
